@@ -1,31 +1,101 @@
-INIT_STATE = (3, 3, 1)
-GOAL_STATE = (0, 0, 0)
 
-class State:
-    def __init__(self, missionaries, cannibals, boat):
-        self.missionaries = missionaries
-        self.cannibals = cannibals
-        self.boat = boat
+class State(object):
+    def __init__(self, cannibalsLeft, missionariesLeft, boatLeft, cannibalsRight, missionariesRight, boatRight, parent=None):
+        self.cannibalsLeft = cannibalsLeft
+        self.missionariesLeft = missionariesLeft
+        self.boatLeft = boatLeft
+        self.cannibalsRight = cannibalsRight
+        self.missionariesRight = missionariesRight
+        self.boatRight = boatRight
+        self.parent = parent
 
-    def value_of_state(self, state):
-        return State(state[0], state[1], state[2])
+# кількість осіб на лівосу березі
+    @property
+    def left_side(self):
+        return self.missionariesLeft + self.cannibalsLeft
 
+# кількість осіб на правому березі
+    @property
+    def right_side(self):
+        return self.missionariesRight + self.cannibalsRight
 
-    def not_equal(self): #on left and rigth side
-        return ((self.missionaries == 1 and self.cannibals == 3) or
-                (self.missionaries == 2 and self.cannibals == 3) or
-                (self.missionaries == 1 and self.cannibals == 2) or
-                (self.missionaries == 2 and self.cannibals == 1) or
-                (self.missionaries == 3 and self.cannibals == 1) or
-                (self.missionaries == 3 and self.cannibals == 2))
+# умови, які не повинні виконуватись
+    def fail(self):
+        return ((self.cannibalsLeft > self.missionariesLeft and
+                 self.missionariesLeft > 0) or
+                (self.cannibalsRight > self.missionariesRight and
+                 self.missionariesRight > 0))
 
-    def more_than_one_boat(self):
-        return self.boat > 1
+    def expand_boat(self):
+        if self.boatRight + self.boatLeft != 1:
+            raise NotImplementedError('more than one boat')
 
-    def checked(self):
-        if self.value_of_state():
-            return False
-        elif self.not_equal():
-            return False
-        else:
-            return True
+        if self.boatRight: # якщо лодка біля правого берега
+            move = self.move_left # то рухаємось від правого до лівого берега
+            cannibals = self.cannibalsRight
+            missionaries = self.missionariesRight
+        elif self.boatLeft:
+            move = self.move_right
+            cannibals = self.cannibalsLeft
+            missionaries = self.missionariesLeft
+
+        # формування вершин станів
+        states = []
+        if missionaries > 0:
+            states.append(move(missionaries=1))
+        if missionaries > 1:
+            states.append(move(missionaries=2))
+        if cannibals > 0:
+            states.append(move(cannibals=1))
+        if cannibals > 0 and missionaries > 0:
+            states.append(move(cannibals=1, missionaries=1))
+        if cannibals > 1:
+            states.append(move(cannibals=2))
+        return states
+
+# рух від правого берега до лівого
+    def move_left(self, missionaries=0, cannibals=0):
+        if missionaries + cannibals > 2 or missionaries + cannibals < 1: # максимум тільки 2 людини на лодці, та не можна перевозити порожню лодку
+            raise RuntimeError('unfeasible transportation')
+
+        return State(
+                self.cannibalsLeft + cannibals,
+                self.missionariesLeft + missionaries,
+                self.boatLeft + 1,
+                self.cannibalsRight - cannibals,
+                self.missionariesRight - missionaries,
+                self.boatRight - 1,
+                parent=self)
+
+# рух від лівого берега до правого
+    def move_right(self, missionaries=0, cannibals=0):
+        if missionaries + cannibals > 2 or missionaries + cannibals < 1:
+            raise RuntimeError('unfeasible transportation')
+
+        return State(
+                self.cannibalsLeft - cannibals,
+                self.missionariesLeft - missionaries,
+                self.boatLeft - 1,
+                self.cannibalsRight + cannibals,
+                self.missionariesRight + missionaries,
+                self.boatRight + 1,
+                parent=self)
+
+# для порівняння
+    def __eq__(self, other):
+        return (self.cannibalsLeft == other.cannibalsLeft and
+                self.missionariesLeft == other.missionariesLeft and
+                self.boatLeft == other.boatLeft and
+                self.cannibalsRight == other.cannibalsRight and
+                self.missionariesRight == other.missionariesRight and
+                self.boatRight == other.boatRight)
+
+# перетворюємо в строкове представлення
+    def __str__(self):
+        return '%d,%d,%d\n%d,%d,%d' % (
+                self.missionariesLeft,
+                self.cannibalsLeft,
+                self.boatLeft,
+                self.missionariesRight,
+                self.cannibalsRight,
+                self.boatRight)
