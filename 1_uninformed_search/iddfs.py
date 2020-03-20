@@ -2,26 +2,23 @@ import sys
 
 def iddfs(init_state, goal_state):
     for depth in range(sys.maxsize):
-        result, expanded = dls(init_state, goal_state, depth)
+        result = dls(init_state, goal_state, depth)
         if result:
-            return result, expanded
+            return result
     return None
 
 
-def dls(node, goal_state, depth):
-    expanded = 0
+def dls(node, goal_state, limit):
     if node == goal_state:
-        return [node], expanded
+        return [node]
     elif node.fail():
-        return None, expanded
-    elif depth > 0:
-        expanded += 1
+        return None
+    elif limit > 0:
         for child in node.expand_boat():
-            result, exp = dls(child, goal_state, depth - 1)
-            expanded += exp
+            result = dls(child, goal_state, limit - 1)
             if result:
                 result.append(node)
-                return result, expanded
-        return None, expanded
+                return result
+        return None
     else:
-        return None, expanded
+        return None

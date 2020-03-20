@@ -9,7 +9,7 @@ class State(object):
         self.boatRight = boatRight
         self.parent = parent
 
-# кількість осіб на лівосу березі
+# кількість осіб на лівому березі
     @property
     def left_side(self):
         return self.missionariesLeft + self.cannibalsLeft
