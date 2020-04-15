@@ -2,13 +2,13 @@ from heapq import heappush, heappushpop
 
 CONST_K = 3
 
-def local_beam_search(init_state, goal_state):
+def local_beam_search(init_state):
     successors = []
     visited = []
 
     for i in range(CONST_K): # формуємо k початкових станів
         currentState = init_state
-        successors.append((init_state.value, currentState))
+        successors.append((init_state.makeValue(), currentState))
 
     depth = 0 # глибина (номер ітерації)
 
@@ -20,7 +20,7 @@ def local_beam_search(init_state, goal_state):
             for neighbour in neighbours:
                 if neighbour not in visited:
                     visited.append(neighbour)
-                    value = neighbour.value
+                    value = neighbour.makeValue()
 
                     if value is 0 :
                         print("depth: %d" % depth)

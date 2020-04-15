@@ -4,10 +4,10 @@ from beam import local_beam_search
 
 def main():
     start_state = Node(3, 3, 1, 0, 0, 0)
-    goal_state = Node(0, 0, 0, 3, 3, 1)
+    #goal_state = Node(0, 0, 0, 3, 3, 1)
 
     try:
-        solution = local_beam_search(start_state, goal_state)
+        solution = local_beam_search(start_state)
         # for i in range(len(solution)):
         #     print("depth: ", i)
         print(solution)

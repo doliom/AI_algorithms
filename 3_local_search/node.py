@@ -6,7 +6,6 @@ class Node:
         self.maharajaRight = maharajaRight
         self.pariRight = pariRight
         self.boatRight = boatRight
-        self.value = self.maharajaLeft + self.pariLeft + self.boatLeft
         self.parent = parent
 
 # кількість осіб на лівому березі
@@ -18,6 +17,18 @@ class Node:
     @property
     def right_side(self):
         return self.maharajaRight + self.pariRight
+
+    def makeValue(self):
+        if ((self.maharajaLeft > self.pariLeft and
+                 self.pariLeft > 0) or
+                (self.maharajaRight > self.pariRight and
+                 self.pariRight > 0)):
+            return 7
+        else:
+            return self.maharajaLeft + self.pariLeft + self.boatLeft
+
+
+
 
     def expand_boat(self):
         if self.boatRight + self.boatLeft != 1:
@@ -95,4 +106,4 @@ class Node:
 
 # перевизначаєм операнд
     def __lt__(self, other):
-        return self.value < other.value
+        return self.makeValue() < other.makeValue()
