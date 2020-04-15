@@ -3,40 +3,46 @@ from heapq import heappush, heappushpop
 CONST_K = 3
 
 def local_beam_search(init_state):
-    successors = []
-    visited = []
+    currentStates = [] #список для k станів, що розглядаються одночасно за 1 ітерацію
+    visited = [] #список пройдених станів
 
     for i in range(CONST_K): # формуємо k початкових станів
-        currentState = init_state
-        successors.append((init_state.makeValue(), currentState))
+        startState = init_state
+        currentStates.append(startState)
 
     depth = 0 # глибина (номер ітерації)
 
-    while successors:
-        nextSuccessors = []
-        for val, node in successors:
-            neighbours = node.expand_boat()
+    while currentStates:
+        nextStates = []
+        print(depth)
+        for node in currentStates:
+            neighbours = node.expand_boat() #формуємо всіх можливих нащадків (список)
+            print_nodes(node, neighbours)
 
             for neighbour in neighbours:
                 if neighbour not in visited:
                     visited.append(neighbour)
                     value = neighbour.makeValue()
 
-                    if value is 0 :
-                        print("depth: %d" % depth)
+                    if value is 0:
+                        print("finish depth: %d" % depth)
                         return neighbour
 
-                    if len(nextSuccessors) < CONST_K:
-                        heappush(nextSuccessors, (value, neighbour))
-
+                    if len(nextStates) < CONST_K:
+                        heappush(nextStates, neighbour) #додаємо в список (heap)
                     else:
-                        val, node = heappushpop(nextSuccessors, (value, neighbour))
+                        node = heappushpop(nextStates, neighbour)
                         visited.remove(node)
 
-        print("__________________________________")
-        print(nextSuccessors)
-        print("__________________________________")
-
-        successors = nextSuccessors
+        currentStates = nextStates
         depth += 1
-    return currentState
+        print("      ")
+    return startState
+
+def print_nodes(node, neighbours):
+    print("CURRENT STATE")
+    print(node)
+    print("NEIGHBOURS")
+    for i in range(len(neighbours)):
+        print("-", i, "-")
+        print(neighbours[i])

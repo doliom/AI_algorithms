@@ -23,12 +23,9 @@ class Node:
                  self.pariLeft > 0) or
                 (self.maharajaRight > self.pariRight and
                  self.pariRight > 0)):
-            return 7
+            return -7
         else:
-            return self.maharajaLeft + self.pariLeft + self.boatLeft
-
-
-
+            return (self.maharajaLeft + self.pariLeft + self.boatLeft)*(-1)
 
     def expand_boat(self):
         if self.boatRight + self.boatLeft != 1:
