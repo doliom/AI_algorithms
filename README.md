@@ -19,3 +19,11 @@ The problem is to fill one of the jugs with exactly 3 gallons of water.
 ***Algorithm:***
 
 A* search
+
+## 3. Local search
+
+Maharadja and pari problem (the same as missionaries and cannibals problem)
+
+***Algorithm:***
+
+Local beam search
