@@ -1,7 +1,7 @@
 MAX_JUG_9 = 9
 MAX_JUG_5 = 5
 
-class Node():
+class Node:
     def __init__(self, jug9, jug5, parent=None):
         self.jug9 = jug9
         self.jug5 = jug5
